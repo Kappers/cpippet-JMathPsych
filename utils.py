@@ -29,9 +29,11 @@ def template(model: PIPPET) -> np.ndarray:
         for i in range(stream.e_means.size):
             pdf = norm.pdf(ts, loc=stream.e_means[i], scale=(stream.e_vars[i])**0.5)
             temp[s_i] += stream.e_lambdas[i] * pdf
-        if isinstance(model, cPIPPET):
-            pdf = norm.pdf(ts, loc=stream.e_means[i]-np.pi, scale=(stream.e_vars[i])**0.5)
-            temp[s_i] += stream.e_lambdas[i] * pdf
+            if isinstance(model, cPIPPET):
+                pdf = norm.pdf(ts, loc=stream.e_means[i]-2*np.pi, scale=(stream.e_vars[i])**0.5)
+                temp[s_i] += stream.e_lambdas[i] * pdf
+                pdf = norm.pdf(ts, loc=stream.e_means[i]+2*np.pi, scale=(stream.e_vars[i])**0.5)
+                temp[s_i] += stream.e_lambdas[i] * pdf
 
     return ts, temp
 
@@ -47,6 +49,7 @@ def merge_legends(axs):
     return by_label
 
 def plot_template(model, ax_temp, cols, xlabelkwargs={}, ylabelkwargs={}):
+    print('plotting template')
     # Expectations
     ts, temps = template(model)
     for i, temp in enumerate(temps):
